@@ -51,7 +51,7 @@ def _season_from_dates(dates: pd.Series) -> str:
     year = dates_parsed.dt.year
     month = dates_parsed.dt.month
     # Matches in Aug–Dec belong to season starting that year
-    dominant_year = year.where(month >= 7, year - 1).mode()[0]
+    dominant_year = int(year.where(month >= 7, year - 1).mode()[0])
     return f"{dominant_year}-{dominant_year + 1}"
 
 
@@ -96,8 +96,10 @@ def _load_soccer_file(path: pathlib.Path, league: str, season: str) -> pd.DataFr
 
     odds_arr = np.column_stack([odds_h, odds_d, odds_a]).astype(float)
 
-    # Drop rows with any missing odds
-    valid = np.isfinite(odds_arr).all(axis=1)
+    # Drop rows with any missing, zero, or negative odds.
+    # Zero odds are rare data errors; they produce inf in inv-odds and infinite
+    # loops in the power/shin bisections.
+    valid = np.isfinite(odds_arr).all(axis=1) & (odds_arr > 0).all(axis=1)
     df = df[valid].copy()
     odds_arr = odds_arr[valid]
 
@@ -189,8 +191,20 @@ def load_soccer(
 
     wide = pd.concat(wide_parts, ignore_index=True)
 
-    # Assign globally unique integer match_id for regression clustering
-    wide = wide.reset_index(drop=True)
+    # Deduplicate: if the user downloaded the same season twice under different
+    # filenames (e.g. "D1 (6).csv" and "D1 copy.csv"), the loader will have
+    # loaded both. Drop exact match duplicates keyed on league+season+teams+date.
+    n_before = len(wide)
+    wide = wide.drop_duplicates(
+        subset=["league", "season", "date", "home_team", "away_team"],
+        keep="first",
+    ).reset_index(drop=True)
+    n_dropped = n_before - len(wide)
+    if n_dropped > 0:
+        warnings.warn(
+            f"Dropped {n_dropped} duplicate match rows "
+            "(same league/season/teams/date seen in multiple files)"
+        )
 
     # Build long format: one row per (match, outcome) with outcome ∈ {H, D, A}
     # Vectorized: stack the three outcomes, avoid iterrows which is O(n) Python loops.
