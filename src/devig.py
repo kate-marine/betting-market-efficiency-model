@@ -40,7 +40,8 @@ def additive(odds: NDArray) -> NDArray:
 def power(odds: NDArray, tol: float = 1e-8, maxiter: int = 100) -> NDArray:
     """
     Power devig: find exponent k per row such that sum((1/o_i)^k) = 1.
-    Uses bisection; k < 1 compresses overround uniformly in log-probability space.
+    For decimal odds > 1, all raw inv-odds are < 1, so k > 1 is needed to
+    push the overround sum back down to 1. Bisects in [1, k_max].
     """
     raw = _inv_odds(odds)
     n = raw.shape[0]
@@ -52,14 +53,17 @@ def power(odds: NDArray, tol: float = 1e-8, maxiter: int = 100) -> NDArray:
         def f(k: float) -> float:
             return float(np.sum(row**k)) - 1.0
 
-        # k=1 always gives overround>0; k->inf collapses to 0. Bisect in (0,1].
-        lo, hi = 0.01, 1.0
+        # k=1 → f > 0 (overround); k→∞ → f → -1. Find upper bound where f < 0.
+        hi = 2.0
+        while f(hi) > 0:
+            hi *= 2.0
+        lo = 1.0
         for _ in range(maxiter):
             mid = (lo + hi) / 2.0
             if f(mid) > 0:
-                hi = mid
-            else:
                 lo = mid
+            else:
+                hi = mid
             if hi - lo < tol:
                 break
         probs[i] = row ** ((lo + hi) / 2.0)
