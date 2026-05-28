@@ -10,6 +10,7 @@ dist/
 build/
 .venv/
 venv/
+env/
 *.egg
 
 # Results (large files)
