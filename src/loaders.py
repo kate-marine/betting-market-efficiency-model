@@ -51,7 +51,7 @@ def _season_from_dates(dates: pd.Series) -> str:
     year = dates_parsed.dt.year
     month = dates_parsed.dt.month
     # Matches in Aug–Dec belong to season starting that year
-    dominant_year = year.where(month >= 7, year - 1).mode()[0]
+    dominant_year = int(year.where(month >= 7, year - 1).mode()[0])
     return f"{dominant_year}-{dominant_year + 1}"
 
 
