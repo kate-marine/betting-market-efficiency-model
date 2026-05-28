@@ -44,20 +44,16 @@ def _probs_to_odds(probs: NDArray, overround: float = 0.05) -> NDArray:
 
 def _apply_flb(true_probs: NDArray, gamma: float = 0.08) -> NDArray:
     """
-    Apply favorite-longshot bias to true probabilities.
+    Return market-implied probabilities with favorite-longshot bias applied.
 
-    In FLB markets, favorites are *underbet* (their true probability exceeds the
-    market-implied probability). We model this by shifting probability mass from
-    longshots toward favorites proportional to (p_i - 1/k), where 1/k is the
-    uniform baseline.
-
-    gamma > 0 corresponds to H&W's finding of positive gamma (favorites underpriced).
+    FLB direction (H&W): the *market* underestimates favorites — true_prob_fav
+    exceeds market-implied prob for favorites. The market compresses the
+    distribution toward uniform relative to the truth. gamma > 0 → more bias.
     """
     k = true_probs.shape[1]
     uniform = 1.0 / k
-    # Shift: p_i_biased = p_i + gamma * (p_i - uniform)
-    biased = true_probs + gamma * (true_probs - uniform)
-    # Renormalize (small numeric correction)
+    # Compress toward uniform: reduces favorite's implied prob, inflates longshots'
+    biased = true_probs - gamma * (true_probs - uniform)
     biased = np.clip(biased, 1e-4, None)
     return biased / biased.sum(axis=1, keepdims=True)
 
@@ -110,7 +106,8 @@ def _make_soccer_df(
 
     start_year = int(season[:4])
     dates = pd.date_range(
-        start=f"{start_year}-08-01", periods=n_matches, freq="3D"
+        start=f"{start_year}-08-01", end=f"{start_year + 1}-05-31",
+        periods=n_matches,
     )
     teams_home = [f"Home_{i % 20:02d}" for i in range(n_matches)]
     teams_away = [f"Away_{(i + 10) % 20:02d}" for i in range(n_matches)]
