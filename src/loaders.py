@@ -144,19 +144,23 @@ def _load_soccer_file(path: pathlib.Path, league: str, season: str) -> pd.DataFr
 def load_soccer(
     raw_dir: str | pathlib.Path,
     output_dir: str | pathlib.Path,
+    recursive: bool = True,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
-    Scan raw_dir recursively for soccer CSVs and produce harmonized parquet.
+    Scan raw_dir for soccer CSVs and produce harmonized parquet.
 
     Layout-agnostic: discovers league from the Div column (if present) or the
     parent folder name; season from path or Date column.
+
+    recursive=False scans only the top-level directory, which is useful when
+    synthetic data lives in a subdirectory alongside real data.
 
     Returns (wide_df, long_df). Also writes Parquet to output_dir.
     """
     raw_dir = pathlib.Path(raw_dir)
     output_dir = pathlib.Path(output_dir)
 
-    csv_files = sorted(raw_dir.rglob("*.csv"))
+    csv_files = sorted(raw_dir.rglob("*.csv") if recursive else raw_dir.glob("*.csv"))
     if not csv_files:
         raise FileNotFoundError(f"No CSV files found under {raw_dir}")
 
