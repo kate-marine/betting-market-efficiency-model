@@ -114,6 +114,9 @@ def _load_soccer_file(path: pathlib.Path, league: str, season: str) -> pd.DataFr
         "home_team": df["HomeTeam"].values,
         "away_team": df["AwayTeam"].values,
         "result": df["FTR"].values,
+        # Goals — used for rolling-form features; optional (not all files have them)
+        "goals_H": pd.to_numeric(df.get("FTHG", pd.Series([np.nan] * len(df))), errors="coerce").values,
+        "goals_A": pd.to_numeric(df.get("FTAG", pd.Series([np.nan] * len(df))), errors="coerce").values,
         "odds_H": odds_arr[:, 0],
         "odds_D": odds_arr[:, 1],
         "odds_A": odds_arr[:, 2],
