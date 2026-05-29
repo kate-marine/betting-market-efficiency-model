@@ -112,11 +112,27 @@ def _make_soccer_df(
     teams_home = [f"Home_{i % 20:02d}" for i in range(n_matches)]
     teams_away = [f"Away_{(i + 10) % 20:02d}" for i in range(n_matches)]
 
+    # Poisson-drawn goals consistent with the outcome (avoids H result but away > home goals)
+    mean_h = np.where(outcomes == 0, 1.8, np.where(outcomes == 1, 1.1, 0.8))
+    mean_a = np.where(outcomes == 2, 1.8, np.where(outcomes == 1, 1.1, 0.8))
+    goals_h = rng.poisson(mean_h).astype(int)
+    goals_a = rng.poisson(mean_a).astype(int)
+    # Ensure goals match declared result (rare Poisson ties/reversals → nudge)
+    for i, res in enumerate(outcomes):
+        if res == 0 and goals_h[i] <= goals_a[i]:
+            goals_h[i] = goals_a[i] + 1
+        elif res == 2 and goals_a[i] <= goals_h[i]:
+            goals_a[i] = goals_h[i] + 1
+        elif res == 1 and goals_h[i] != goals_a[i]:
+            goals_a[i] = goals_h[i]
+
     df = pd.DataFrame({
         "Div": league,
         "Date": dates.strftime("%d/%m/%Y"),
         "HomeTeam": teams_home,
         "AwayTeam": teams_away,
+        "FTHG": goals_h,
+        "FTAG": goals_a,
         "FTR": [_SOCCER_RESULT_MAP[o] for o in outcomes],
         "AvgH": avg_odds[:, 0].round(2),
         "AvgD": avg_odds[:, 1].round(2),
