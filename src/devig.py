@@ -54,6 +54,10 @@ def power(odds: NDArray, tol: float = 1e-8, maxiter: int = 100) -> NDArray:
             return float(np.sum(row**k)) - 1.0
 
         # k=1 → f > 0 (overround); k→∞ → f → -1. Find upper bound where f < 0.
+        # Guard: if row contains inf/nan (e.g., from 0-valued odds), return uniform.
+        if not np.all(np.isfinite(row)) or np.any(row <= 0):
+            probs[i] = np.full(len(row), 1.0 / len(row))
+            continue
         hi = 2.0
         while f(hi) > 0:
             hi *= 2.0
