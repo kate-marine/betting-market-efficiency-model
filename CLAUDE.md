@@ -203,3 +203,7 @@ Do NOT skip the synthetic data step. It is the test infrastructure for
 everything downstream, and Winkelmann et al.'s entire contribution rests on
 exactly this kind of simulation-based validation. Build it properly the first
 time.
+
+## Summary docs
+
+Write summary docs of each phase of work that you do. Describe in detail what you did and and why. Include failures if you ran into any and changes made as well as results.
