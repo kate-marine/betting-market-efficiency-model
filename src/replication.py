@@ -228,6 +228,61 @@ def bootstrap_gamma(
 
 
 # ---------------------------------------------------------------------------
+# Multiple-testing correction
+# ---------------------------------------------------------------------------
+
+def add_multiple_testing_correction(
+    table: pd.DataFrame,
+    p_col: str = "p_value",
+    alpha: float = 0.05,
+) -> pd.DataFrame:
+    """
+    Add Bonferroni and BH-FDR corrected p-values to a run_hw_table() result.
+
+    Only the per-league rows are corrected (the pooled row is a single test
+    and should not be included in the correction). The number of simultaneous
+    tests is the number of per-league rows.
+
+    Why both corrections:
+      - Bonferroni: conservative, controls FWER (probability of any false positive)
+      - BH-FDR: less conservative, controls FDR (expected fraction of false positives)
+    Both are reported so the reader can see the range of conclusions.
+
+    Adds columns: p_bonferroni, p_bh, sig_bonferroni, sig_bh.
+    """
+    from statsmodels.stats.multitest import multipletests
+
+    df = table.copy()
+    df["p_bonferroni"] = np.nan
+    df["p_bh"]         = np.nan
+    df["sig_bonferroni"] = ""
+    df["sig_bh"]         = ""
+
+    # Per-league rows only (not Pooled)
+    league_mask = df["league"] != "Pooled"
+    p_vals = df.loc[league_mask, p_col].values.astype(float)
+    n = len(p_vals)
+
+    # Bonferroni
+    p_bonf = np.minimum(p_vals * n, 1.0)
+    df.loc[league_mask, "p_bonferroni"] = p_bonf
+
+    # BH-FDR
+    _, p_bh_vals, _, _ = multipletests(p_vals, method="fdr_bh")
+    df.loc[league_mask, "p_bh"] = p_bh_vals
+
+    # Significance stars on corrected values
+    def stars(p):
+        if pd.isna(p): return ""
+        return "***" if p < 0.01 else "**" if p < 0.05 else "*" if p < 0.10 else ""
+
+    df.loc[league_mask, "sig_bonferroni"] = [stars(p) for p in p_bonf]
+    df.loc[league_mask, "sig_bh"]         = [stars(p) for p in p_bh_vals]
+
+    return df
+
+
+# ---------------------------------------------------------------------------
 # Table formatting utilities
 # ---------------------------------------------------------------------------
 

@@ -10,7 +10,7 @@ sys.path.insert(0, str(pathlib.Path(__file__).parent.parent))
 
 import warnings; warnings.filterwarnings('ignore')
 import pandas as pd
-from src.replication import run_hw_table, compare_estimators, bootstrap_gamma, format_table
+from src.replication import run_hw_table, compare_estimators, bootstrap_gamma, format_table, add_multiple_testing_correction
 
 LONG  = pathlib.Path("data/processed/soccer_long.parquet")
 TABLES = pathlib.Path("results/tables")
@@ -35,10 +35,22 @@ print()
 # -----------------------------------------------------------------------
 print("Running H&W regression (normalized)...")
 table_norm = run_hw_table(hw, p_col="norm_p")
+table_norm = add_multiple_testing_correction(table_norm)
+
 table_norm_fmt = format_table(
     table_norm[["league","gamma","gamma_se","t_stat","p_value","n_matches","n_obs"]]
 )
 print(table_norm_fmt.to_string(index=False))
+print()
+
+# Show which leagues survive multiple-testing correction
+print("Multiple-testing correction (per-league rows only, n=9 tests):")
+league_rows = table_norm[table_norm["league"] != "Pooled"][
+    ["league","gamma","p_value","p_bonferroni","sig_bonferroni","p_bh","sig_bh"]
+].copy()
+for col in ["gamma","p_value","p_bonferroni","p_bh"]:
+    league_rows[col] = league_rows[col].map(lambda x: f"{x:.4f}" if pd.notna(x) else "—")
+print(league_rows.to_string(index=False))
 print()
 
 table_norm.to_csv(TABLES / "hw_replication_normalized.csv", index=False)
@@ -46,7 +58,10 @@ with open(TABLES / "hw_replication_normalized.md", "w") as f:
     f.write("## H&W Replication: Normalized Probabilities\n\n")
     f.write(f"Seasons: {HW_WINDOW[0]}–{HW_WINDOW[1]}\n\n")
     f.write(table_norm_fmt.to_markdown(index=False))
-    f.write("\n\n*: p<0.10  **: p<0.05  ***: p<0.01\n")
+    f.write("\n\n*: p<0.10  **: p<0.05  ***: p<0.01 (uncorrected)\n\n")
+    f.write("### Multiple-testing correction (n=9 league-level tests)\n\n")
+    f.write(league_rows.to_markdown(index=False))
+    f.write("\n\nBonferroni controls FWER; BH controls FDR (less conservative).\n")
 
 # -----------------------------------------------------------------------
 # Table 2 equivalent: normalized vs. inverse-odds comparison
