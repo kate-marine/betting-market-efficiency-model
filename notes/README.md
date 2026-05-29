@@ -12,4 +12,7 @@ One file per phase: what was built, decisions made, and what went wrong.
 | 6 | [Base Predictive Model (LightGBM)](phase_06_model.md) | Complete |
 | 7 | [Conformal Wrapper](phase_07_conformal.md) | Complete |
 | 8 | [Calibration Evaluation](phase_08_calibration.md) | Complete |
-| 9 | [Layer 2: Claim-Level Uncertainty](phase_09_layer2.md) | Planned |
+| 9a | [Calibration Ablation](phase_09a_calibration_ablation.md) | Complete |
+| 9b | [Multiple-Testing Correction](phase_09b_multiple_testing.md) | Complete |
+| 9c | [Power Analysis (no-FLB leagues)](phase_09c_power_analysis.md) | Planned |
+| 9d | [Layer 2: Null Simulation](phase_09d_layer2_null.md) | Planned |
