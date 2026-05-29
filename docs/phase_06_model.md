@@ -93,3 +93,16 @@ Model correctly assigns higher probability to the actual outcome class in each r
 **Feature name warning.** LightGBM fitted with a named DataFrame was being predicted with `.values` (numpy array), triggering a sklearn warning. Fixed by passing the DataFrame slice directly instead of `.values`.
 
 **`ValueError` instead of empty DataFrame.** When all test seasons are skipped (e.g., not enough training data), the function raised `ValueError: No predictions generated`. Changed to return an empty DataFrame with a warning, which is cleaner for callers that might iterate over seasons.
+
+
+
+What was built: Elo ratings + rolling form + rest days computed in strict date order (src/features.py), then LightGBM with walk-forward CV (src/model.py). 15,856 out-of-sample predictions across 2016–2022 saved to Parquet.
+
+What failed:
+
+groupby().first() silently skips NaN — two test assertions were wrong; fixed by checking df.iloc[0] instead
+Synthetic data had no goals → home_gf5/away_gf5 were NaN everywhere → dropna killed all training rows; fixed by adding Poisson-drawn goals to synth.py
+lgb.LGBMClassifier requires scikit-learn (not obvious from the LightGBM install); added to deps
+Passing numpy array to a model fitted with named DataFrame triggered sklearn warning; kept as DataFrame throughout
+What we need to check before trusting the results: The sanity check shows the model assigns higher probability to actual outcomes (directionally correct), but we haven't done full calibration yet — that's Phase 8.
+
