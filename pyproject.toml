@@ -18,6 +18,7 @@ dependencies = [
     "matplotlib>=3.8",
     "statsmodels>=0.14",
     "tqdm>=4.66",
+    "tabulate>=0.9",
 ]
 
 [project.optional-dependencies]
