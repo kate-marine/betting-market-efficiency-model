@@ -11,5 +11,5 @@ One file per phase: what was built, decisions made, and what went wrong.
 | 5 | [H&W Replication](phase_05_hw_replication.md) | Complete |
 | 6 | [Base Predictive Model (LightGBM)](phase_06_model.md) | Complete |
 | 7 | [Conformal Wrapper](phase_07_conformal.md) | Complete |
-| 8 | [Calibration Evaluation](phase_08_calibration.md) | Planned |
+| 8 | [Calibration Evaluation](phase_08_calibration.md) | Complete |
 | 9 | [Layer 2: Claim-Level Uncertainty](phase_09_layer2.md) | Planned |
