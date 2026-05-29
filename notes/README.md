@@ -14,5 +14,5 @@ One file per phase: what was built, decisions made, and what went wrong.
 | 8 | [Calibration Evaluation](phase_08_calibration.md) | Complete |
 | 9a | [Calibration Ablation](phase_09a_calibration_ablation.md) | Complete |
 | 9b | [Multiple-Testing Correction](phase_09b_multiple_testing.md) | Complete |
-| 9c | [Power Analysis (no-FLB leagues)](phase_09c_power_analysis.md) | Planned |
-| 9d | [Layer 2: Null Simulation](phase_09d_layer2_null.md) | Planned |
+| 9c | [Power Analysis (no-FLB leagues)](phase_09c_power_analysis.md) | Complete |
+| 9d | [Layer 2: Null Simulation](phase_09d_layer2_null.md) | Complete |
