@@ -36,7 +36,7 @@ Both applied only to the 9 per-league rows; the pooled row is a single test and 
 
 **After BH-FDR:** I1 survives clearly (q=0.0035***). E2 is borderline at α=0.10 (q=0.060). All others lose significance.
 
-**E1's apparent significance (p=0.051) vanishes under both corrections** — exactly illustrating Winkelmann's point that borderline per-test findings in multi-league analyses are likely false positives.
+**E1's apparent significance (p=0.051) vanishes under both corrections** shows Winkelmann's point that borderline per-test findings in multi-league analyses are likely false positives.
 
 ---
 
