@@ -17,7 +17,7 @@ from src.model import walk_forward_predict
 WIDE  = pathlib.Path("data/processed/soccer_wide.parquet")
 OUT   = pathlib.Path("data/processed/soccer_predictions.parquet")
 
-# H&W window: test on seasons where we have enough training data
+# test on seasons with enough training data
 HW_TEST_SEASONS = [
     "2016-2017", "2017-2018", "2018-2019",
     "2019-2020", "2020-2021", "2021-2022",
@@ -32,7 +32,7 @@ t = time.time()
 wide_feat = compute_features(wide)
 print(f"  Done in {time.time()-t:.1f}s")
 
-# Sanity check: Elo should vary
+# Elo should vary
 print(f"  Elo range: [{wide_feat['elo_home'].min():.0f}, {wide_feat['elo_home'].max():.0f}]")
 print(f"  NaN rate in features:")
 for col in ["elo_home", "home_form_W", "home_gf5", "home_rest_days"]:
