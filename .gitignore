@@ -1,4 +1,9 @@
-# data — never commit raw or processed data
+
+#files
+CLAUDE.md
+notes/
+
+# data 
 data/raw/
 data/processed/
 
