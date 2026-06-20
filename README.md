@@ -1,4 +1,4 @@
-# Calibrated Claims: Conformal Prediction Meets Sports Betting Market Efficiency
+# Conformal Prediction Meets Sports Betting Market Efficiency
 
 Betting markets are often claimed to be efficient — meaning prices accurately reflect true outcome probabilities. One known violation is **favorite-longshot bias (FLB)**: favorites are underpriced relative to their true win probability, while longshots are overpriced. The existing literature documents this bias, but Hegarty & Whelan (2024) show the standard test is methodologically flawed, and Winkelmann et al. (2024) show the per-league, per-season analyses that populate this literature have severe multiple-testing and power problems.
 
