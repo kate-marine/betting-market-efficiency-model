@@ -17,11 +17,11 @@ I ran a direct null simulation (2,000 draws per league from market-implied proba
 
 Premier League (E0): MDE = **0.086** at 80% power. The pooled effect (0.046) is smaller than this threshold, so even if the Premier League has FLB at exactly the pooled level, I would only detect it only **32% of the time** with this sample. Bundesliga (D1) and La Liga (SP1) face similar constraints (MDE ≈ 0.10). Therefore we can only rule out FLB ≥ 0.086 in the Premier League and we can't distinguish between no FLB and FLB at or below the pooled level.
 
-### 2. The betting market outperforms a calibrated ML model 
+### 2. The betting market outperforms a calibrated ML model  
 
-A LightGBM model on Elo ratings, 5-match rolling form, and rest days achieves Brier = **0.213 raw**, **0.205 after isotonic calibration** (walk-forward CV, 2016–2022). The market achieves **0.195**, with non-overlapping bootstrap CIs. ECE: market 0.006 vs. calibrated model 0.012.
+I trained a LightGBM model on Elo ratings, 5-match form, and rest days and achieved a Brier score of **0.213 raw**, **0.205 after isotonic calibration** (walk-forward CV, 2016–2022). The market achieves **0.195**, with non-overlapping bootstrap CIs. ECE: market 0.006 vs. calibrated model 0.012.
 
-Raw LightGBM outputs are predictably miscalibrated — isotonic post-hoc calibration closes 89% of the ECE gap. The remaining gap and the full Brier difference represent genuine information the market has that team-level features don't: current injuries, lineup decisions, and betting flow. At 90% conformal coverage, market prediction sets are 0.14–0.21 outcomes smaller than the calibrated model's, with the smallest gap in League 1 (E2) — consistent with E2 showing the strongest FLB.
+Raw LightGBM outputs are predictably miscalibrated; isotonic post-hoc calibration fixed 89% of the ECE gap. The remaining gap and the full Brier difference represent certain real information that the market has that team-level features do not. This could include current injuries, lineup decisions, or even just betting flow. At 90% conformal coverage, market prediction sets are 0.14–0.21 outcomes smaller than the calibrated model's, with the smallest gap in League 1 (E2) (consistent with E2 showing the strongest FLB).
 
 ---
 
