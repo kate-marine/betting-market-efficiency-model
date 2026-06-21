@@ -85,13 +85,13 @@ load_tennis('data/raw', 'data/processed')
 Each script reads Parquet written by earlier steps. Approximate runtimes on a 2020 MacBook Pro:
 
 ```bash
-python scripts/run_replication.py          # ~1 min  — H&W regression + multiple-testing correction
-python scripts/run_model.py                # ~1 min  — LightGBM walk-forward CV
-python scripts/run_conformal.py            # ~5 sec  — conformal prediction set sizes
-python scripts/run_calibration.py          # ~2 min  — Brier, ECE, reliability diagrams (n_boot=1000)
-python scripts/run_calibration_ablation.py # ~3 min  — post-hoc calibration comparison
+python scripts/run_replication.py          # H&W regression + multiple-testing correction
+python scripts/run_model.py                
+python scripts/run_conformal.py          
+python scripts/run_calibration.py         
+python scripts/run_calibration_ablation.py 
 python scripts/run_power_analysis.py       # ~5 min  — MDE table + simulation validation
-python scripts/run_null_simulation.py      # ~5 sec  — efficient-markets null simulation
+python scripts/run_null_simulation.py      
 ```
 
 ---
