@@ -1,30 +1,23 @@
-# Conformal Prediction Meets Sports Betting Market Efficiency
+# Soccer Betting Market Efficiency Analysis
 
-Betting markets are often claimed to be efficient — meaning prices accurately reflect true outcome probabilities. One known violation is **favorite-longshot bias (FLB)**: favorites are underpriced relative to their true win probability, while longshots are overpriced. The existing literature documents this bias, but Hegarty & Whelan (2024) show the standard test is methodologically flawed, and Winkelmann et al. (2024) show the per-league, per-season analyses that populate this literature have severe multiple-testing and power problems.
+Sports betting markets are often claimed to be efficient markets, meaning that prices accurately reflect true outcome probabilities. One prevalent violation of this claim is the **favorite-longshot bias (FLB)** where favorites are underpriced relative to their true win probability, while longshots or underdogs are overpriced. While this bias is already well documented, Hegarty & Whelan (2024) show the standard test is methodologically flawed, and Winkelmann et al. (2024) show that the per-league, per-season analyses that populate most studies have severe multiple-testing and power problems.
 
-This project replicates H&W's FLB regression across 9 European soccer leagues, applies Winkelmann's critique to its own results (Bonferroni correction, power analysis, null simulation), and adds a Layer 1 comparison of market probabilities against a conformal-wrapped LightGBM model. Every claim has a bootstrap CI; every null result has a power analysis; the test calibration is verified by direct simulation.
+This project replicates H&W's FLB regression across 9 European soccer leagues, and applies Winkelmann's critique to the results (Bonferroni correction, power analysis, null simulation). I also aadded a comparison of market probabilities against a conformal-wrapped LightGBM model. Every claim has a bootstrap confidence interval and every null result has a power analysis; the test calibration is verified by direct simulation.
 
----
 
-## Key findings
+## Results
 
-### 1. FLB exists in the pooled data, but most league-level findings are fragile
+### 1. FLB exists in the pooled data, but most league-level results are weak
 
-Pooled across **18,538 matches**: γ = +0.046 (95% CI [+0.021, +0.070], p < 0.001). Favorites are systematically underpriced; returns on favorites exceed returns on longshots.
+When pooled across **18,538 matches**: γ = +0.046 (95% CI [+0.021, +0.070], p < 0.001). Favorites are systematically underpriced, and returns on favorites exceed returns on longshots.
 
-After Bonferroni correction for 9 simultaneous league-level tests, **only Serie A (I1, γ = +0.114)** remains clearly significant. League 1 England (E2, γ = +0.221) is borderline under BH-FDR (q = 0.06). The English Championship's apparent p = 0.051 vanishes under any reasonable correction — exactly the false-positive pattern Winkelmann warns about.
+However, after Bonferroni correction for 9 simultaneous league-level tests, **only Serie A (I1, γ = +0.114)** stayed clearly significant. League 1 England (E2, γ = +0.221) is borderline under BH-FDR (q = 0.06). The English Championship's p = 0.051 disappears under any reasonable correction, which is exactly the false-positive pattern Winkelmann warns about.
 
-The inverse-odds estimator used in much of the earlier literature gives a pooled γ of −0.003 (p = 0.81), absorbing the FLB signal into the overround. Normalized probabilities recover the correct sign and magnitude.
+I ran a direct null simulation (2,000 draws per league from market-implied probabilities) which confirmed that the cluster-robust normal approximation is accurate for 8 of 9 leagues (simulation-to-parametric p-value ratio 1.0–1.25). The joint test across all 9 leagues yields p = 0.010, confirming that the full dataset is collectively inconsistent with market efficiency without any distributional assumption.
 
-*Robustness:* A direct null simulation (2,000 draws per league from market-implied probabilities) confirms the cluster-robust normal approximation is accurate for 8 of 9 leagues (simulation-to-parametric p-value ratio 1.0–1.25). The joint test across all 9 leagues yields p = 0.010, confirming the full dataset is collectively inconsistent with market efficiency without any distributional assumption.
+Premier League (E0): MDE = **0.086** at 80% power. The pooled effect (0.046) is smaller than this threshold, so even if the Premier League has FLB at exactly the pooled level, I would only detect it only **32% of the time** with this sample. Bundesliga (D1) and La Liga (SP1) face similar constraints (MDE ≈ 0.10). Therefore we can only rule out FLB ≥ 0.086 in the Premier League and we can't distinguish between no FLB and FLB at or below the pooled level.
 
-### 2. "No FLB in the Premier League" is a power statement, not an efficiency result
-
-Premier League (E0): MDE = **0.086** at 80% power. The pooled effect (0.046) is smaller than this threshold — even if the Premier League has FLB at exactly the pooled level, we'd detect it only **32% of the time** with this sample. Bundesliga (D1) and La Liga (SP1) face similar constraints (MDE ≈ 0.10).
-
-The honest claim is: "we can rule out FLB ≥ 0.086 in the Premier League; we cannot distinguish between no FLB and FLB at or below the pooled level." This is Winkelmann's underpowering concern applied to our own analysis.
-
-### 3. The betting market outperforms a calibrated ML model — and the gap is real, not an artifact
+### 2. The betting market outperforms a calibrated ML model 
 
 A LightGBM model on Elo ratings, 5-match rolling form, and rest days achieves Brier = **0.213 raw**, **0.205 after isotonic calibration** (walk-forward CV, 2016–2022). The market achieves **0.195**, with non-overlapping bootstrap CIs. ECE: market 0.006 vs. calibrated model 0.012.
 
