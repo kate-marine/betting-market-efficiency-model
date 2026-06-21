@@ -23,13 +23,10 @@ I trained a LightGBM model on Elo ratings, 5-match form, and rest days and achie
 
 Raw LightGBM outputs are predictably miscalibrated; isotonic post-hoc calibration fixed 89% of the ECE gap. The remaining gap and the full Brier difference represent certain real information that the market has that team-level features do not. This could include current injuries, lineup decisions, or even just betting flow. At 90% conformal coverage, market prediction sets are 0.14–0.21 outcomes smaller than the calibrated model's, with the smallest gap in League 1 (E2) (consistent with E2 showing the strongest FLB).
 
----
 
 ## Data
 
-**Soccer:** [football-data.co.uk](https://www.football-data.co.uk/data.php) — one CSV per league per season. 9 European leagues (D1, E0, E1, E2, F1, I1, N1, SC0, SP1), seasons 2013/14–2025/26. H&W replication window: 2015/16–2021/22.
-
-**Tennis:** [tennis-data.co.uk](http://www.tennis-data.co.uk/alldata.php) — loaders and synthetic validation complete; real data analysis planned.
+**Soccer:** [football-data.co.uk](https://www.football-data.co.uk/data.php) One CSV per league per season. 9 European leagues (D1, E0, E1, E2, F1, I1, N1, SC0, SP1), seasons 2013/14–2025/26. H&W replication window: 2015/16–2021/22.
 
 Raw data is gitignored. See [Adding real data](#adding-real-data) below.
 
@@ -73,7 +70,7 @@ python scripts/smoke_test.py
 
 ## Adding real data
 
-Drop soccer CSVs and tennis XLSXs anywhere under `data/raw/`. The loaders recover the league from the `Div` column (or folder name) and the season from the filename or `Date` column:
+Drop soccer CSVs anywhere under `data/raw/`. The loaders recover the league from the `Div` column (or folder name) and the season from the filename or `Date` column:
 
 ```bash
 python -c "
